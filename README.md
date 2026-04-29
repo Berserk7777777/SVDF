@@ -483,14 +483,7 @@ See `requirements.txt` for complete list.
 
 If you use this code, please cite:
 
-```bibtex
-@article{fsar2024,
-  title={Few-Shot Action Recognition via Stable Video Diffusion Features},
-  author={Your Name},
-  journal={arXiv preprint arXiv:XXXX.XXXXX},
-  year=2024}
-}
-```
+
 
 ---
 

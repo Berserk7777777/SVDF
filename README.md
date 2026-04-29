@@ -481,7 +481,6 @@ See `requirements.txt` for complete list.
 
 ## Citation
 
-If you use this code, please cite:
 
 
 

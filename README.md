@@ -496,9 +496,6 @@ If you use this code, please cite:
 
 ## Acknowledgments
 
-- [Stable Video Diffusion](https://github.com/Stability-AI/generative-models) for pre-trained models
-- [ARN](https://github.com/zhangxueting/ARN) for HMDB51/UCF101 few-shot splits
-- [CMN](https://github.com/ffmpbgrnn/CMN) for Kinetics400 few-shot splits
 
 ---
 

@@ -69,7 +69,7 @@ cd ..
 
 ### Directory Structure
 ```
-ActionDiff/
+SVDF/
 ├── generative-models/          # Main codebase
 │   ├── scripts/
 │   ├── models/

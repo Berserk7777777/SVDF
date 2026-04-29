@@ -7,9 +7,9 @@ Few-shot video action recognition framework leveraging Stable Video Diffusion (S
 This project extracts multi-layer, multi-timestep features from pre-trained Stable Video Diffusion models and trains a **SpatioTemporalTRXNet** meta-learner for few-shot action recognition on HMDB51, UCF101, and Kinetics400.
 
 **Key Features:**
-- Multi-layer UNet feature extraction (layers 5, 7, 12) at multiple diffusion timesteps (15, 23)
+- Multi-layer UNet feature extraction (layers 5, 7, 12) at multiple diffusion timesteps (15, 23 out of 25 total steps)
 - 3×3 spatial grid features for fine-grained spatio-temporal modeling
-- Dynamic Programming-based optimal temporal phase segmentation
+- Uniform temporal segmentation into 3 phases for efficient GPU processing
 - Prototype-based matching with learnable spatial attention
 
 ---
@@ -125,112 +125,70 @@ Splits are included in `splits/` directory.
 
 ## Feature Extraction
 
-Extract multi-layer SVD features at multiple timesteps. Total diffusion steps = 25.
+Extract multi-layer SVD features at multiple timesteps and layers **simultaneously** in a single pass.
 
 ### Parameters
-- **Layers:** 5, 7, 12 (UNet encoder layers)
-- **Timesteps:** 15, 23 (diffusion denoising steps)
+- **UNet Layers:** 5, 7 (mid layers), 12 (deep layer)
+- **Diffusion Timesteps:** 23 (primary), 15 (secondary) — extracted simultaneously
+- **Total diffusion steps:** 25
+- **Feature stride:** 4 (temporal subsampling)
+- **Offset frames:** 8 (starting frame offset)
 - **Grid size:** 3×3 spatial patches
 - **Output:** `(T, 9, 1920)` per video
-  - `T`: temporal frames (subsampled)
+  - `T`: temporal frames (subsampled with stride 4)
   - `9`: spatial patches (3×3 grid)
-  - `1920`: concatenated channels (3 layers × 2 timesteps × 320 channels)
+  - `1920`: concatenated channels (layer5@t23 + layer7@t23 + layer12@t23 + layer5@t15 + layer7@t15 + layer12@t15)
 
 ### HMDB51
 
-**Extract at timestep 15:**
 ```bash
 cd generative-models
 
 python scripts/generate_svd_maps.py \
     --dataset hmdb51 \
     --data_root ../hmdb51/videos \
-    --version svd_xt \
-    --num_frames 25 \
-    --num_steps 25 \
-    --diffusion_step 15 \
-    --layer_idxs 5,7,12 \
-    --output_folder results/hmdb51/extract_hmdb51_grid \
-    --grid_size 3 \
-    --device cuda
-```
-
-**Extract at timestep 23:**
-```bash
-python scripts/generate_svd_maps.py \
-    --dataset hmdb51 \
-    --data_root ../hmdb51/videos \
-    --version svd_xt \
-    --num_frames 25 \
-    --num_steps 25 \
+    --output_folder results/hmdb51 \
+    --exp_name extract_hmdb51 \
     --diffusion_step 23 \
-    --layer_idxs 5,7,12 \
-    --output_folder results/hmdb51/extract_hmdb51_grid \
-    --grid_size 3 \
+    --diffusion_step2 15 \
+    --mid_layer_idxs 5 7 \
+    --deep_layer_idxs 12 \
+    --feature_stride 4 \
+    --offset_frames 8 \
     --device cuda
 ```
 
 ### UCF101
 
-**Extract at timestep 15:**
 ```bash
 python scripts/generate_svd_maps.py \
     --dataset ucf101 \
     --data_root ../ucf101/videos \
-    --version svd_xt \
-    --num_frames 25 \
-    --num_steps 25 \
-    --diffusion_step 15 \
-    --layer_idxs 5,7,12 \
-    --output_folder results/ucf101/extract_ucf101_grid \
-    --grid_size 3 \
-    --device cuda
-```
-
-**Extract at timestep 23:**
-```bash
-python scripts/generate_svd_maps.py \
-    --dataset ucf101 \
-    --data_root ../ucf101/videos \
-    --version svd_xt \
-    --num_frames 25 \
-    --num_steps 25 \
+    --output_folder results/ucf101 \
+    --exp_name extract_ucf101 \
     --diffusion_step 23 \
-    --layer_idxs 5,7,12 \
-    --output_folder results/ucf101/extract_ucf101_grid \
-    --grid_size 3 \
+    --diffusion_step2 15 \
+    --mid_layer_idxs 5 7 \
+    --deep_layer_idxs 12 \
+    --feature_stride 4 \
+    --offset_frames 8 \
     --device cuda
 ```
 
 ### Kinetics400
 
-**Extract at timestep 15:**
 ```bash
 python scripts/generate_svd_maps.py \
     --dataset kinetics400 \
     --data_root ../kinetics400/videos \
-    --version svd_xt \
-    --num_frames 25 \
-    --num_steps 25 \
-    --diffusion_step 15 \
-    --layer_idxs 5,7,12 \
-    --output_folder results/kinetics400/extract_kinetics_grid \
-    --grid_size 3 \
-    --device cuda
-```
-
-**Extract at timestep 23:**
-```bash
-python scripts/generate_svd_maps.py \
-    --dataset kinetics400 \
-    --data_root ../kinetics400/videos \
-    --version svd_xt \
-    --num_frames 25 \
-    --num_steps 25 \
+    --output_folder results/kinetics400 \
+    --exp_name extract_kinetics \
     --diffusion_step 23 \
-    --layer_idxs 5,7,12 \
-    --output_folder results/kinetics400/extract_kinetics_grid \
-    --grid_size 3 \
+    --diffusion_step2 15 \
+    --mid_layer_idxs 5 7 \
+    --deep_layer_idxs 12 \
+    --feature_stride 4 \
+    --offset_frames 8 \
     --device cuda
 ```
 
@@ -481,7 +439,7 @@ python scripts/visualize_clusters.py \
 1. Linear projection: D → H (1920 → 256)
 2. Temporal + Spatial positional encoding
 3. Spatio-temporal self-attention over T×P tokens (T=8 frames, P=9 patches)
-4. DP-based optimal temporal segmentation into K=3 phases
+4. Uniform temporal segmentation into K=3 phases (GPU-efficient, no CPU sync)
 5. Phase-wise temporal pooling → (B, K, P, H)
 
 **Matching Head (SpatioProtoHead):**
@@ -496,6 +454,7 @@ python scripts/visualize_clusters.py \
 - **Space:** O(B·T·P·H) activations + O(D·H + H²) parameters
 - **Parameters:** ~1.0M
 - **FLOPs:** ~0.7 GFLOPs/episode (5-way 1-shot)
+- **Temporal segmentation:** Uniform 3-way split (O(1) per sample, fully GPU-parallelized)
 
 ---
 

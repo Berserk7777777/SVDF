@@ -239,7 +239,7 @@ python scripts/train_fsar.py \
     --features_root results/ucf101/extract_ucf101_grid/feats/grid_3x3 \
     --splits_root ../splits/ucf_ARN \
     --n_way 5 --k_shot 1 --n_query 15 \
-    --hidden_dim 256 --n_phases 3 \
+    --hidden_dim 516 --n_phases 3 \
     --num_epochs 50 --batch_size 4 --lr 5e-5 \
     --save_dir results/fsar_ucf101_5way1shot \
     --device cuda
@@ -252,7 +252,7 @@ python scripts/train_fsar.py \
     --features_root results/ucf101/extract_ucf101_grid/feats/grid_3x3 \
     --splits_root ../splits/ucf_ARN \
     --n_way 5 --k_shot 5 --n_query 15 \
-    --hidden_dim 256 --n_phases 3 \
+    --hidden_dim 516 --n_phases 3 \
     --num_epochs 50 --batch_size 2 --lr 5e-5 \
     --save_dir results/fsar_ucf101_5way5shot \
     --device cuda
@@ -267,7 +267,7 @@ python scripts/train_fsar.py \
     --features_root results/kinetics400/extract_kinetics_grid/feats/grid_3x3 \
     --splits_root ../splits/kinetics_CMN \
     --n_way 5 --k_shot 1 --n_query 15 \
-    --hidden_dim 256 --n_phases 3 \
+    --hidden_dim 516 --n_phases 3 \
     --num_epochs 50 --batch_size 4 --lr 5e-5 \
     --save_dir results/fsar_kinetics_5way1shot \
     --device cuda
@@ -280,7 +280,7 @@ python scripts/train_fsar.py \
     --features_root results/kinetics400/extract_kinetics_grid/feats/grid_3x3 \
     --splits_root ../splits/kinetics_CMN \
     --n_way 5 --k_shot 5 --n_query 15 \
-    --hidden_dim 256 --n_phases 3 \
+    --hidden_dim 516 --n_phases 3 \
     --num_epochs 50 --batch_size 2 --lr 5e-5 \
     --save_dir results/fsar_kinetics_5way5shot \
     --device cuda

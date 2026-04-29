@@ -60,8 +60,8 @@ cd ..
 ```
 
 **Required files:**
-- `checkpoints/svd.safetensors` (9.56 GB)
-- `checkpoints/svd_xt.safetensors` (9.56 GB)
+- `checkpoints/svd.safetensors` (8.90 GB)
+- `checkpoints/svd_xt.safetensors` (8.90 GB)
 
 ---
 

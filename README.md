@@ -18,14 +18,14 @@ This project extracts multi-layer, multi-timestep features from pre-trained Stab
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/your-username/ActionDiff.git
-cd ActionDiff/generative-models
+git clone 
+cd SVDF/generative-models
 ```
 
 ### 2. Create Environment
 ```bash
-conda create -n actiondiff python=3.10
-conda activate actiondiff
+conda create -n svdf python=3.10
+conda activate svdf
 ```
 
 ### 3. Install Dependencies

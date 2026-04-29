@@ -115,6 +115,8 @@ unrar x UCF101.rar -d ../ucf101/videos/
 **Dataset Splits:**
 
 The project uses standard few-shot splits:
+- **SSv2-Small**: 64 base / 12 val / 24 test classes (OTAM split)
+- **SSv2-Full**: 64 base / 12 val / 24 test classes (OTAM split)
 - **HMDB51:** 31 base / 10 val / 10 test classes (ARN split)
 - **UCF101:** 70 base / 10 val / 21 test classes (ARN split)
 - **Kinetics400:** 64 base / 12 val / 24 test classes (CMN split)
